@@ -47,7 +47,28 @@ elsif ($action eq 'mark'){
     if($content > scalar @todos){
         die "Index provided ($content) exceeds todo-list length (".scalar @todos.")";
     }
-    $todos[$content] =~ s/\[ \]/[x]/;
+    $todos[$content] =~ s/\[ \]/[x]/; # magic!!
+    open($livefile, '>:encoding(UTF-8)', $todofile) or die "Could not open todofile '$todofile'";
+    print $livefile @todos;
+    close $livefile;
+    print @todos;
+}
+elsif($action eq 'delete'){
+    if($content =~ /^\D+$/){die "Must provide integer argument, got $content";}
+    open(my $livefile, '<:encoding(UTF-8)', $todofile) or die "Could not open todofile '$todofile'";
+    my @todos;
+    while(my $todo = <$livefile>){
+        if($todo =~ /\>/){
+            push @todos, (split(/\s/, $todo))[0]."\n";
+        }else{
+            push @todos, $todo;
+        }
+    }
+    close $livefile;
+    if($content > scalar @todos){
+        die "Index provided ($content) exceeds todo-list length (".scalar @todos.")";
+    }
+    splice(@todos, $content, 1);
     open($livefile, '>:encoding(UTF-8)', $todofile) or die "Could not open todofile '$todofile'";
     print $livefile @todos;
     close $livefile;
