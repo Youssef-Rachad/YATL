@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 use Getopt::Long;
+#use Cwd 'abs_path';
+use FindBin '$Bin';
 
 my $debug=0;
 
@@ -13,7 +15,7 @@ if($debug==1){
     print "$action - $content\n";
 }
 
-my $todofile = 'todo.txt';
+my $todofile = $Bin.'/todo.txt';
 if($action eq 'create'){
     open(my $livefile, '>>:encoding(UTF-8)', $todofile) or die "Could not open todofile '$todofile'";
     print $livefile "[ ] $content\n";
