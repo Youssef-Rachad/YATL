@@ -4,12 +4,13 @@ use warnings;
 use Getopt::Long;
 #use Cwd 'abs_path';
 use FindBin '$Bin';
+use Time::Piece;
 
 my $debug=0;
-
+my $greeting='';
 # save arguments following -w or --word in the scalar
 # =s means that an argument follows
-GetOptions( 'action=s' => \my $action, 'content=s' => \my $content);
+GetOptions( 'action=s' => \my $action, 'content=s' => \my $content, 'greeting' => \$greeting);
 
 if($debug==1){
     print "$action - $content\n";
@@ -23,6 +24,8 @@ if($action eq 'create'){
     close $livefile;
 }
 elsif($action eq 'list'){
+    if($debug==1){print "in greeting flag, got $greeting.";}
+    if($greeting ne ''){ my $date = localtime->strftime('%A, %b %e %Y'); print "$date | Today's Tasks:\n=====================================\n";}
     open(my $livefile, '<:encoding(UTF-8)', $todofile) or die "Could not open todofile '$todofile'";
     while(my $line = <$livefile>){ # <> used for files and globs
         chomp $line; # removes trailing new line
