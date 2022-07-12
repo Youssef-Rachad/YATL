@@ -22,10 +22,32 @@ if($action eq 'create'){
 }
 elsif($action eq 'list'){
     open(my $livefile, '<:encoding(UTF-8)', $todofile) or die "Could not open todofile '$todofile'";
-    while(my $row = <$livefile>){
-        chomp $row; # removes trailing new line
-        print "$row \n";
+    while(my $line = <$livefile>){ # <> used for files and globs
+        chomp $line; # removes trailing new line
+        print "$line \n";
     }
     print "End of list\n";
     close $livefile;
+}
+elsif ($action eq 'mark'){
+    # check that we are given a positive integer index
+    if($content =~ /^\D+$/){die "Must provide integer argument, got $content";}
+    open(my $livefile, '<:encoding(UTF-8)', $todofile) or die "Could not open todofile '$todofile'";
+    my @todos;
+    while(my $todo = <$livefile>){
+        if($todo =~ /\>/){
+            push @todos, (split(/\s/, $todo))[0]."\n";
+        }else{
+            push @todos, $todo;
+        }
+    }
+    close $livefile;
+    if($content > scalar @todos){
+        die "Index provided ($content) exceeds todo-list length (".scalar @todos.")";
+    }
+    $todos[$content] =~ s/\[ \]/[x]/;
+    open($livefile, '>:encoding(UTF-8)', $todofile) or die "Could not open todofile '$todofile'";
+    print $livefile @todos;
+    close $livefile;
+    print @todos;
 }
